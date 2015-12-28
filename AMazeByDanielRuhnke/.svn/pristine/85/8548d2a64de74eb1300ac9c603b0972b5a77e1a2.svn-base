@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="edu.wm.cs.cs301.danielruhnke.ui.PlayActivity" >
+
+    <ProgressBar
+        android:id="@+id/progressBarBattery"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/buttonRight"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonUp"
+        android:layout_toRightOf="@+id/buttonPause"
+        android:text="@string/Right"
+        android:visibility="invisible"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:id="@+id/buttonLeft"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonUp"
+        android:layout_toLeftOf="@+id/buttonPause"
+        android:text="@string/Left"
+        android:visibility="invisible"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:id="@+id/buttonDown"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/Down"
+        android:visibility="invisible"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:id="@+id/buttonPause"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonDown"
+        android:layout_centerHorizontal="true"
+        android:text="Pause"
+        android:visibility="invisible"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:id="@+id/buttonUp"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonPause"
+        android:layout_centerHorizontal="true"
+        android:text="@string/Up"
+        android:visibility="invisible"
+        android:onClick="onButtonClick" />
+
+    <Button
+        android:id="@+id/buttonSuccess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/buttonFailure"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="46dp"
+        android:text="@string/success"
+        android:onClick="onShortcutSuccess"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/buttonFailure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/buttonUp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="91dp"
+        android:text="@string/failure"
+        android:onClick="onShortcutFailure"
+        android:visibility="invisible" />
+    
+    <edu.wm.cs.cs301.danielruhnke.falstad.GraphicsWrapper
+        android:id="@+id/MazeGraphic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/progressBarBattery"
+        android:layout_alignParentLeft="true" />
+
+</RelativeLayout>

@@ -1,0 +1,143 @@
+package edu.wm.cs.cs301.danielruhnke.falstad;
+
+import android.os.Handler;
+import android.util.Log;
+import edu.wm.cs.cs301.danielruhnke.ui.PlayActivity;
+
+public class WallFollower implements RobotDriver {
+
+	//Fields needed for the Wall Follower
+	public Robot robot;
+	public int mazeWidth;
+	public int mazeHeight;
+	public Distance distanceToExit;
+	
+	private Handler handler = new Handler();
+	public PlayActivity playActivity;
+	boolean lastStep = false;
+	
+	/**
+	 * Constructor class for WallFollower for project requirements
+	 * No need to do anything
+	 */
+	public WallFollower(){
+		//Do nothing
+	}
+	
+	@Override
+	public void setRobot(Robot r) {
+		robot = r;
+	}
+
+	@Override
+	public void setDimensions(int width, int height) {
+		mazeWidth = width;
+		mazeHeight = height;
+	}
+
+	@Override
+	public void setDistance(Distance distance) {
+		distanceToExit = distance;
+	}
+
+	@Override
+	public boolean drive2Exit() throws Exception {
+		if (!robot.isAtGoal() && !lastStep){
+			if (robot.distanceToObstacle(Robot.Direction.LEFT) == 0 && 
+					robot.distanceToObstacle(Robot.Direction.FORWARD) > 0 && !robot.isAtGoal()){
+				moveRobot();
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.LEFT) > 0 && !robot.isAtGoal()){
+				roundCorner();
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.FORWARD) == 0 && !robot.isAtGoal()){
+				turnRobot(Robot.Turn.RIGHT);
+			}
+		}
+		else if (robot.isAtGoal()){
+			lastStep = true;
+			if (robot.distanceToObstacle(Robot.Direction.FORWARD) == Integer.MAX_VALUE){
+				moveRobot();
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.BACKWARD) == Integer.MAX_VALUE){
+				turnRobot(Robot.Turn.LEFT);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.RIGHT) == Integer.MAX_VALUE){
+				turnRobot(Robot.Turn.RIGHT);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.LEFT) == Integer.MAX_VALUE){
+				turnRobot(Robot.Turn.LEFT);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public void moveRobot(){
+		Log.v("Driver", "Move");
+		if (!playActivity.paused){
+			handler.postDelayed(new Runnable() {
+				public void run() {
+					try{
+						playActivity.battery.setProgress(playActivity.battery.getProgress() - 5);
+						playActivity.path = playActivity.path + 1;
+						Log.v("Driver", "Moving");
+						robot.move(1);
+						drive2Exit();
+					}
+					catch(Exception exception){
+						//Continue working
+					}
+				}
+			}, 100);
+		}
+	}
+	
+	public void turnRobot(final Robot.Turn turn){
+		Log.v("Driver", "Turn");
+		if (!playActivity.paused){
+			handler.postDelayed(new Runnable() {
+				public void run() {
+					try{
+						playActivity.battery.setProgress(playActivity.battery.getProgress() - 3);
+						Log.v("Driver", "Turning");
+						robot.rotate(turn);
+						drive2Exit();
+					}
+					catch(Exception exception){
+						//Continue working
+					}
+				}
+			}, 100);
+		}
+	}
+	
+	public void roundCorner(){
+		if (!playActivity.paused){
+			handler.postDelayed(new Runnable() {
+				public void run() {
+					try{
+						playActivity.battery.setProgress(playActivity.battery.getProgress() - 3);
+						Log.v("Driver", "Turning");
+						robot.rotate(Robot.Turn.LEFT);
+						moveRobot();
+					}
+					catch(Exception exception){
+						//Continue working
+					}
+				}
+			}, 100);
+		}
+	}
+
+	@Override
+	public float getEnergyConsumption() {
+		return 2500 - robot.getBatteryLevel();
+	}
+
+	@Override
+	public int getPathLength() {
+		return ((BasicRobot) robot).pathLength;
+	}
+
+}

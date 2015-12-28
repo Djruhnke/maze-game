@@ -1,0 +1,129 @@
+package edu.wm.cs.cs301.danielruhnke.falstad;
+
+public class Wizard implements RobotDriver {
+
+	//Fields needed for the Wizard
+	public Robot robot;
+	public int mazeWidth;
+	public int mazeHeight;
+	public Distance distanceToExit;
+	
+	/**
+	 * Constructor class for Wizard for project requirements
+	 * No need to do anything
+	 */
+	public Wizard(){
+		//Do nothing
+	}
+	
+	@Override
+	public void setRobot(Robot r) {
+		robot = r;
+	}
+
+	@Override
+	public void setDimensions(int width, int height) {
+		mazeWidth = width;
+		mazeHeight = height;
+	}
+
+	@Override
+	public void setDistance(Distance distance) {
+		distanceToExit = distance;
+	}
+
+	@Override
+	public boolean drive2Exit() throws Exception {
+		distanceToExit = ((BasicRobot) robot).maze.mazedists;
+		int smallestDistance = distanceToExit.getDistance(robot.getCurrentPosition()[0], robot.getCurrentPosition()[1]);
+		Robot.Direction moveDirection = null;
+		while (!robot.isAtGoal()){
+			if (robot.distanceToObstacle(Robot.Direction.FORWARD) > 0){
+				if (distanceToExit.getDistance((robot.getCurrentPosition()[0] + robot.getCurrentDirection()[0]), 
+						(robot.getCurrentPosition()[1] + robot.getCurrentDirection()[1])) < smallestDistance){
+					smallestDistance = distanceToExit.getDistance((robot.getCurrentPosition()[0] + robot.getCurrentDirection()[0]), 
+							(robot.getCurrentPosition()[1] + robot.getCurrentDirection()[1]));
+					moveDirection = Robot.Direction.FORWARD;
+				}
+			}
+			if (robot.distanceToObstacle(Robot.Direction.BACKWARD) > 0){
+				if (distanceToExit.getDistance((robot.getCurrentPosition()[0] - robot.getCurrentDirection()[0]), 
+						(robot.getCurrentPosition()[1] - robot.getCurrentDirection()[1])) < smallestDistance){
+					smallestDistance = distanceToExit.getDistance((robot.getCurrentPosition()[0] - robot.getCurrentDirection()[0]), 
+							(robot.getCurrentPosition()[1] - robot.getCurrentDirection()[1]));
+					moveDirection = Robot.Direction.BACKWARD;
+				}
+			}
+			if (robot.distanceToObstacle(Robot.Direction.LEFT) > 0){
+				if (distanceToExit.getDistance((robot.getCurrentPosition()[0] - robot.getCurrentDirection()[1]), 
+						(robot.getCurrentPosition()[1] + robot.getCurrentDirection()[0])) < smallestDistance){
+					smallestDistance = distanceToExit.getDistance((robot.getCurrentPosition()[0] - robot.getCurrentDirection()[1]), 
+							(robot.getCurrentPosition()[1] + robot.getCurrentDirection()[0]));
+					moveDirection = Robot.Direction.LEFT;
+				}
+			}
+			if (robot.distanceToObstacle(Robot.Direction.RIGHT) > 0){
+				if (distanceToExit.getDistance((robot.getCurrentPosition()[0] + robot.getCurrentDirection()[1]), 
+						(robot.getCurrentPosition()[1] - robot.getCurrentDirection()[0])) < smallestDistance){
+					smallestDistance = distanceToExit.getDistance((robot.getCurrentPosition()[0] + robot.getCurrentDirection()[1]), 
+							(robot.getCurrentPosition()[1] - robot.getCurrentDirection()[0]));
+					moveDirection = Robot.Direction.RIGHT;
+				}
+			}
+			switch(moveDirection){
+			case FORWARD:
+				robot.move(1);
+				break;
+			case BACKWARD:
+				robot.rotate(Robot.Turn.LEFT);
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+				break;
+			case RIGHT:
+				robot.rotate(Robot.Turn.RIGHT);
+				robot.move(1);
+				break;
+			case LEFT:
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+				break;
+			default:
+				throw new Exception();
+			}
+		}
+		if (robot.isAtGoal()){
+			if (robot.distanceToObstacle(Robot.Direction.FORWARD) == Integer.MAX_VALUE){
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.BACKWARD) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.LEFT);
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.RIGHT) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.RIGHT);
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.LEFT) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+			}
+			else{
+				System.out.println("Is not at goal");
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public float getEnergyConsumption() {
+		return 2500 - robot.getBatteryLevel();
+	}
+
+	@Override
+	public int getPathLength() {
+		return ((BasicRobot) robot).pathLength;
+	}
+
+}

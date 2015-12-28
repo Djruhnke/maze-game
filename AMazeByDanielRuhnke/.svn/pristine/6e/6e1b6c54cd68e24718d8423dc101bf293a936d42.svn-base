@@ -1,0 +1,82 @@
+package edu.wm.cs.cs301.danielruhnke.falstad;
+
+public class WallFollower implements RobotDriver {
+
+	//Fields needed for the Wall Follower
+	public Robot robot;
+	public int mazeWidth;
+	public int mazeHeight;
+	public Distance distanceToExit;
+	
+	/**
+	 * Constructor class for WallFollower for project requirements
+	 * No need to do anything
+	 */
+	public WallFollower(){
+		//Do nothing
+	}
+	
+	@Override
+	public void setRobot(Robot r) {
+		robot = r;
+	}
+
+	@Override
+	public void setDimensions(int width, int height) {
+		mazeWidth = width;
+		mazeHeight = height;
+	}
+
+	@Override
+	public void setDistance(Distance distance) {
+		distanceToExit = distance;
+	}
+
+	@Override
+	public boolean drive2Exit() throws Exception {
+		while(!robot.isAtGoal()){
+			while(robot.distanceToObstacle(Robot.Direction.LEFT) == 0 && 
+					robot.distanceToObstacle(Robot.Direction.FORWARD) > 0 && !robot.isAtGoal()){
+				robot.move(1);
+			}
+			while (robot.distanceToObstacle(Robot.Direction.LEFT) > 0 && !robot.isAtGoal()){
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+			}
+			while (robot.distanceToObstacle(Robot.Direction.FORWARD) == 0 && !robot.isAtGoal()){
+				robot.rotate(Robot.Turn.RIGHT);
+			}
+		}
+		if (robot.isAtGoal()){
+			if (robot.distanceToObstacle(Robot.Direction.FORWARD) == Integer.MAX_VALUE){
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.BACKWARD) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.LEFT);
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.RIGHT) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.RIGHT);
+				robot.move(1);
+			}
+			else if (robot.distanceToObstacle(Robot.Direction.LEFT) == Integer.MAX_VALUE){
+				robot.rotate(Robot.Turn.LEFT);
+				robot.move(1);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public float getEnergyConsumption() {
+		return 2500 - robot.getBatteryLevel();
+	}
+
+	@Override
+	public int getPathLength() {
+		return ((BasicRobot) robot).pathLength;
+	}
+
+}

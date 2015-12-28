@@ -1,0 +1,188 @@
+package edu.wm.cs.cs301.danielruhnke.ui;
+
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import edu.wm.cs.cs301.danielruhnke.falstad.GraphicsWrapper;
+import android.widget.Button;
+import android.widget.ProgressBar;
+
+public class PlayActivity extends ActionBarActivity {
+
+	private static final String pauseTAG = "Pause button pressed";
+	private static final String unpauseTAG = "Unpause button pressed";
+	private static final String upTAG = "Forward button pressed";
+	private static final String downTAG = "Backward button pressed";
+	private static final String rightTAG = "Right button pressed";
+	private static final String leftTAG = "Left button pressed";
+	private static final String successTAG = "Shortcut Success button pressed";
+	private static final String failureTAG = "Shortcut Failure button pressed";
+	
+	public final static String EXTRA_SOLVED = "edu.wm.cs.cs301.danielruhnke.ui.SOLVED";
+	public final static String EXTRA_BATTERY = "edu.wm.cs.cs301.danielruhnke.ui.BATTERY";
+	
+	ProgressBar battery;
+	Button up;
+	Button down;
+	Button right;
+	Button left;
+	Button pause;
+	String driver;
+	
+	/**
+	 * Creates play screen
+	 * sets energy bar to the max of the robot's battery
+	 * sets buttons to visible depending on the type of driver selected
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_play);
+		
+		battery = (ProgressBar) findViewById(R.id.progressBarBattery);
+		battery.setMax(2500);
+		battery.setProgress(2500);
+		
+		Bundle extras = getIntent().getExtras();
+		driver = extras.getString(GeneratingActivity.EXTRA_DRIVER);
+		if (driver.equals("Default")){
+			up = (Button) findViewById(R.id.buttonUp);
+			up.setVisibility(View.VISIBLE);
+			down = (Button) findViewById(R.id.buttonDown);
+			down.setVisibility(View.VISIBLE);
+			right = (Button) findViewById(R.id.buttonRight);
+			right.setVisibility(View.VISIBLE);
+			left = (Button) findViewById(R.id.buttonLeft);
+			left.setVisibility(View.VISIBLE);
+		}
+		else{
+			pause = (Button) findViewById(R.id.buttonPause);
+			pause.setText("Pause");
+			pause.setVisibility(View.VISIBLE);
+		}
+		
+		/****TEST FOR GRAPHICS*****/
+		GraphicsWrapper graphics = (GraphicsWrapper) findViewById(R.id.MazeGraphic);
+		//graphics.invalidate();
+		graphics.WrapperFillRect(1, 3, 600, 200);
+	}
+
+	/**
+	 * Creates the options menu
+	 * the three options are set up here and checked if they were checked in the previous screen
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.play, menu);
+		
+		Bundle extras = getIntent().getExtras();
+		boolean map = extras.getBoolean(GeneratingActivity.EXTRA_MAP);
+		boolean solution = extras.getBoolean(GeneratingActivity.EXTRA_SOLUTION);
+		boolean top = extras.getBoolean(GeneratingActivity.EXTRA_TOP);
+		MenuItem checkBoxMap = (MenuItem) menu.findItem(R.id.mapPlay);
+        checkBoxMap.setChecked(map);
+		MenuItem checkBoxSolution = (MenuItem) menu.findItem(R.id.solutionPlay);
+        checkBoxSolution.setChecked(solution);
+		MenuItem checkBoxTop = (MenuItem) menu.findItem(R.id.topPlay);
+        checkBoxTop.setChecked(top);
+		return true;
+	}
+
+	/**
+	 * Checks or unchecks the option when clicked
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		item.setChecked(!item.isChecked());
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	/**
+	 * Looks at which button was pressed and adjusts the battery level
+	 * @param view which button was pressed
+	 */
+	public void onButtonClick(View view){
+		if (driver.equals("Default")){
+			if (view == up){
+				battery.setProgress(battery.getProgress() - 5);
+				Log.v(upTAG, "Battery reduced by 5");
+			}
+			else if (view == down){
+				battery.setProgress(battery.getProgress() - 11);
+				Log.v(downTAG, "Battery reduced by 11");
+			}
+			else if (view == left){
+				battery.setProgress(battery.getProgress() - 3);
+				Log.v(leftTAG, "Battery reduced by 3");
+			}
+			else if (view == right){
+				battery.setProgress(battery.getProgress() - 3);
+				Log.v(rightTAG, "Battery reduced by 3");
+			}
+		}
+		else{
+			if (pause.getText() == "Pause"){
+				//Pause robot
+				pause.setText("Unpause");
+				Log.v(pauseTAG, "Robot Paused");
+			}
+			else{
+				//Unpause robot
+				pause.setText("Pause");
+				Log.v(unpauseTAG, "Robot Unpaused");
+			}
+		}
+	}
+	
+	/**
+	 * Sends the screen back to the main activity when the back button is pressed
+	 */
+	public void onBackPressed(){
+		Intent intent = new Intent(this, AMazeActivity.class);
+		startActivity(intent);
+	}
+	
+	/**
+	 * Sends the activity to the final screen having won the maze
+	 * @param view button which was pressed
+	 */
+	public void onShortcutSuccess(View view){
+		Intent intent = new Intent(this, FinishActivity.class);
+		intent.putExtra(EXTRA_SOLVED, true);
+		intent.putExtra(EXTRA_BATTERY, battery.getMax() - battery.getProgress());
+		Bundle extras = getIntent().getExtras();
+		int skill = extras.getInt(AMazeActivity.EXTRA_SKILL);
+		intent.putExtra(AMazeActivity.EXTRA_SKILL, skill);
+		Log.v(successTAG, "Successful Shortcut");
+		startActivity(intent);
+	}
+	
+	/**
+	 * Sends the activity to the final screen having lost the maze
+	 * @param view button which was pressed
+	 */
+	public void onShortcutFailure(View view){
+		Intent intent = new Intent(this, FinishActivity.class);
+		intent.putExtra(EXTRA_SOLVED, false);
+		intent.putExtra(EXTRA_BATTERY, battery.getMax() - battery.getProgress());
+		Bundle extras = getIntent().getExtras();
+		int skill = extras.getInt(AMazeActivity.EXTRA_SKILL);
+		intent.putExtra(AMazeActivity.EXTRA_SKILL, skill);
+		Log.v(failureTAG, "Unsuccessful Shortcut");
+		startActivity(intent);
+	}
+}

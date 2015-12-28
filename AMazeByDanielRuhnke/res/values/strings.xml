@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AMazeByDanielRuhnke</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="StartButton">Generate</string>
+    <string name="SliderText">Skill Level</string>
+    <string name="SpinnerText">Generation Method</string>
+    <string name="title_activity_generating">GeneratingActivity</string>
+    <string name="progressText">Generation Progress</string>
+    <string name="backButton">Back</string>
+    <string name="driverText">Select Driver</string>
+    <string name="options">Options</string>
+    <string name="mapOption">Show Visible Walls</string>
+    <string name="solutionOption">Show Solution</string>
+    <string name="mazeFromTopOption">Show Maze From Top</string>
+    <string name="start">Start</string>
+    <string name="title_activity_play">PlayActivity</string>
+    <string name="Up">Forward</string>
+    <string name="Down">Backward</string>
+    <string name="Right">Turn Right</string>
+    <string name="Left">Turn Left</string>
+    <string name="failure">Shortcut: Failure</string>
+    <string name="success">Shortcut: Success</string>
+    <string name="title_activity_finish">FinishActivity</string>
+    <string name="instructions">Press the back button below to return to the start screen.</string>
+    <string name="saveMaze">Save Maze</string>
+
+</resources>
